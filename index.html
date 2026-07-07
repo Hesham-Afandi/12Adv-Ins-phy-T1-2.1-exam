@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔬 Grade 12 Advanced Physics - Reflection of Light (2.1)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        body.en-mode { font-family: 'Inter', sans-serif; }
+        .correct { background-color: #dcfce7 !important; border-color: #16a34a !important; }
+        .incorrect { background-color: #fee2e2 !important; border-color: #dc2626 !important; }
+        .formula { font-family: 'Times New Roman', serif; letter-spacing: 0.5px; direction: ltr; display: inline-block; font-style: italic; }
+        .timer-warning { color: #dc2626 !important; animation: pulse 1s infinite; }
+        @keyframes pulse { 50% { opacity: 0.7; } }
+        @media print { .no-print { display: none !important; } }
+        .success-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 0.875rem; }
+        .grade-excellent { background: #dcfce7; color: #166534; }
+        .grade-good { background: #fef3c7; color: #92400e; }
+        .grade-pass { background: #dbeafe; color: #1e40af; }
+        .grade-fail { background: #fee2e2; color: #991b1b; }
+        .lang-switch {
+            position: fixed; top: 16px; left: 16px; z-index: 100;
+            background: white; padding: 6px; border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; gap: 4px;
+            border: 2px solid #0d9488;
+        }
+        [dir="ltr"] .lang-switch { left: auto; right: 16px; }
+        .lang-btn {
+            padding: 6px 14px; border-radius: 20px; cursor: pointer; font-weight: bold;
+            transition: all 0.3s; border: none; font-size: 0.875rem;
+            background: transparent; color: #6b7280;
+        }
+        .lang-btn.active { background: #0d9488; color: white; box-shadow: 0 2px 6px rgba(13,148,136,0.4); }
+        .lang-btn:hover:not(.active) { background: #f0fdfa; color: #0d9488; }
+        .shuffle-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 p-4 md:p-8 min-h-screen">
+
+    <div class="lang-switch no-print">
+        <button class="lang-btn active" onclick="setLanguage('ar')" id="btn-ar">عربي</button>
+        <button class="lang-btn" onclick="setLanguage('en')" id="btn-en">EN</button>
+    </div>
+
+    <div id="timer-container" class="max-w-4xl mx-auto mb-4 text-center no-print">
+        <div class="bg-white p-4 rounded-xl shadow-md inline-block border-2 border-teal-100">
+            <span class="text-gray-600 ml-2" data-ar="⏱️ الوقت المتبقي:" data-en="⏱️ Time Remaining:">⏱️ الوقت المتبقي:</span>
+            <span id="timer" class="text-2xl font-bold text-teal-600 font-mono">60:00</span>
+            <span class="shuffle-badge" data-ar="🔀 أسئلة عشوائية" data-en="🔀 Random Questions">🔀 أسئلة عشوائية</span>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto mb-6 flex flex-wrap gap-3 justify-center no-print">
+        <button onclick="toggleAnswers()" class="bg-teal-600 hover:bg-teal-700 text-white px-5 py-2 rounded-lg font-medium transition shadow cursor-pointer" data-ar="👁️ إظهار / إخفاء الإجابات" data-en="👁️ Show / Hide Answers">👁️ إظهار / إخفاء الإجابات</button>
+        <button onclick="window.print()" class="bg-gray-800 hover:bg-gray-900 text-white px-5 py-2 rounded-lg font-medium transition shadow cursor-pointer" data-ar="🖨️ طباعة / PDF" data-en="🖨️ Print / PDF">🖨️ طباعة / PDF</button>
+        <button onclick="reshuffleExam()" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-5 py-2 rounded-lg font-medium transition shadow cursor-pointer" data-ar="🔀 إعادة خلط الأسئلة" data-en="🔀 Reshuffle Questions">🔀 إعادة خلط الأسئلة</button>
+    </div>
+
+    <header class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md mb-8 border-r-4 border-teal-600">
+        <div class="text-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2" data-ar="🔬 فيزياء الصف الثاني عشر متقدم" data-en="🔬 Grade 12 Advanced Physics">🔬 فيزياء الصف الثاني عشر متقدم</h1>
+            <h2 class="text-lg text-teal-600 font-semibold" data-ar="الدرس 2.1: انعكاس الضوء" data-en="Lesson 2.1: Reflection of Light">الدرس 2.1: انعكاس الضوء</h2>
+            <p class="text-sm text-gray-600 mt-2" data-ar="الانعكاس المنتظم وغير المنتظم، قانون الانعكاس، خصائص الصور في المرايا المستوية" data-en="Specular & Diffuse Reflection, Law of Reflection, Plane-Mirror Image Properties">الانعكاس المنتظم وغير المنتظم، قانون الانعكاس، خصائص الصور في المرايا المستوية</p>
+            <p class="text-xs text-orange-600 mt-2 font-semibold" data-ar="⚠️ ملاحظة: يتم خلط ترتيب الأسئلة والخيارات تلقائياً مع كل تحديث للصفحة" data-en="⚠️ Note: Questions and options are randomly shuffled on every page refresh">⚠️ ملاحظة: يتم خلط ترتيب الأسئلة والخيارات تلقائياً مع كل تحديث للصفحة</p>
+        </div>
+        <div class="mt-4 flex flex-wrap justify-center gap-4 text-sm text-gray-600">
+            <span><span data-ar="📅 التاريخ:" data-en="📅 Date:">📅 التاريخ:</span> <input type="text" class="border-b border-gray-400 bg-transparent w-28 text-center"></span>
+            <span><span data-ar="👤 الاسم:" data-en="👤 Name:">👤 الاسم:</span> <input type="text" id="studentName" class="border-b border-gray-400 bg-transparent w-32 text-center" placeholder="Enter name"></span>
+            <span><span data-ar="🏫 الشعبة:" data-en="🏫 Class:">🏫 الشعبة:</span> <input type="text" id="studentClass" class="border-b border-gray-400 bg-transparent w-28 text-center" placeholder="Class"></span>
+            <span><span data-ar="⏱️ المدة: 60 دقيقة" data-en="⏱️ Duration: 60 min">⏱️ المدة: 60 دقيقة</span></span>
+            <span><span data-ar="📊 المجموع: 100 درجة" data-en="📊 Total: 100 pts">📊 المجموع: 100 درجة</span></span>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto space-y-8" id="exam-content"></main>
+
+    <div class="text-center no-print pb-8 mt-8">
+        <button onclick="gradeExam()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-lg px-10 py-4 rounded-xl font-bold shadow-xl transition transform hover:scale-105 cursor-pointer" data-ar="📝 تسليم وتصحيح الامتحان" data-en="📝 Submit & Grade Exam">📝 تسليم وتصحيح الامتحان</button>
+    </div>
+
+    <div id="results-panel" class="max-w-4xl mx-auto mt-8 bg-white p-8 rounded-2xl shadow-2xl border-t-4 border-emerald-500 hidden no-print">
+        <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center" data-ar="📊 نتائج الامتحان" data-en="📊 Exam Results">📊 نتائج الامتحان</h2>
+        <div class="grid md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-blue-50 p-4 rounded-xl text-center"><p data-ar="اسم الطالب" data-en="Student Name">اسم الطالب</p><p id="res-name" class="font-bold text-xl text-teal-700">-</p></div>
+            <div class="bg-purple-50 p-4 rounded-xl text-center"><p data-ar="التاريخ" data-en="Date">التاريخ</p><p id="res-date" class="font-bold text-xl text-purple-700">-</p></div>
+            <div class="bg-emerald-50 p-4 rounded-xl text-center"><p data-ar="المجموع" data-en="Score">المجموع</p><p id="res-total" class="font-bold text-3xl text-emerald-600">0 / 100</p></div>
+        </div>
+        <div class="text-center mb-6">
+            <span id="success-badge" class="success-badge grade-excellent">-</span>
+            <p id="success-percent" class="text-4xl font-bold text-emerald-600 mt-2">100%</p>
+            <p class="text-sm text-gray-500" data-ar="نسبة النجاح" data-en="Success Rate">نسبة النجاح</p>
+        </div>
+        <div class="bg-gray-50 p-6 rounded-xl mb-6">
+            <h3 class="font-bold text-lg mb-4 text-gray-800" data-ar="📈 تفصيل الأداء حسب القسم:" data-en="📈 Performance Breakdown:">📈 تفصيل الأداء حسب القسم:</h3>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700" data-ar="الانعكاس المنتظم وغير المنتظم" data-en="Specular vs Diffuse Reflection">الانعكاس المنتظم وغير المنتظم</span>
+                    <span id="sec1-score" class="font-bold text-teal-600">0/4</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700" data-ar="قانون الانعكاس ونموذج الموجة" data-en="Law of Reflection & Wave Model">قانون الانعكاس ونموذج الموجة</span>
+                    <span id="sec2-score" class="font-bold text-teal-600">0/4</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700" data-ar="خصائص الصور - الموقع والارتفاع" data-en="Image Properties - Position & Height">خصائص الصور - الموقع والارتفاع</span>
+                    <span id="sec3-score" class="font-bold text-teal-600">0/4</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700" data-ar="خصائص الصور - الاتجاه والانعكاس" data-en="Image Properties - Orientation & Reversal">خصائص الصور - الاتجاه والانعكاس</span>
+                    <span id="sec4-score" class="font-bold text-teal-600">0/4</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700" data-ar="مسائل حسابية على الانعكاس" data-en="Calculation Problems on Reflection">مسائل حسابية على الانعكاس</span>
+                    <span id="sec5-score" class="font-bold text-teal-600">0/4</span>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mb-6">
+            <button id="sendEmailBtn" onclick="sendResultsToEmail()" class="bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white text-lg px-8 py-3 rounded-xl font-bold shadow-xl transition transform hover:scale-105 cursor-pointer" data-ar="📧 إرسال النتائج للمعلم" data-en="📧 Send Results to Teacher">📧 إرسال النتائج للمعلم</button>
+            <p id="emailStatus" class="text-sm mt-2 text-center font-medium"></p>
+        </div>
+        <div class="flex gap-3 justify-center">
+            <button onclick="window.print()" class="bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold" data-ar="🖨️ طباعة النتائج" data-en="🖨️ Print Results">🖨️ طباعة النتائج</button>
+        </div>
+    </div>
+
+    <footer class="max-w-4xl mx-auto mt-10 mb-8 text-center text-gray-500 text-sm no-print">
+        © <span data-ar="فيزياء الصف 12 متقدم | انعكاس الضوء" data-en="Grade 12 Advanced Physics | Reflection of Light">فيزياء الصف 12 متقدم | انعكاس الضوء</span> | Mr. Mohammed Hesham
+    </footer>
+
+<script>
+// ==================== إعدادات EmailJS ====================
+const PUBLIC_KEY = "Rb3Lq8tXaFmc5YHUH";
+const SERVICE_ID = "service_w15m64i";
+const TEMPLATE_ID = "template_5b0u2tq";
+const TARGET_EMAIL = "mohammedhesham872@gmail.com";
+
+emailjs.init(PUBLIC_KEY);
+
+const originalExamData = {
+    sections: [
+        {
+            id: 'sec1',
+            title: { ar: '🔹 الجزء الأول: الانعكاس المنتظم وغير المنتظم', en: '🔹 Part 1: Specular vs Diffuse Reflection' },
+            questions: [
+                {
+                    q: { ar: 'ما هو الفرق الأساسي بين الانعكاس المنتظم (Specular) والانعكاس غير المنتظم (Diffuse)؟', en: 'What is the main difference between Specular and Diffuse reflection?' },
+                    options: [
+                        { ar: 'في الانعكاس المنتظم تنعكس الأشعة المتوازية بشكل متوازٍ، بينما في غير المنتظم تتشتت في اتجاهات مختلفة', en: 'In specular reflection, parallel rays reflect parallelly; in diffuse, they scatter in different directions' },
+                        { ar: 'الانعكاس المنتظم يحدث فقط على الأسطح الخشنة', en: 'Specular reflection occurs only on rough surfaces' },
+                        { ar: 'الانعكاس غير المنتظم يحدث فقط على المرايا', en: 'Diffuse reflection occurs only on mirrors' },
+                        { ar: 'لا يوجد فرق بينهما من حيث تشتت الضوء', en: 'There is no difference between them in terms of light scattering' }
+                    ],
+                    correct: 0,
+                    answer: { ar: 'الأسطح الملساء (كالمرايا) تُنتج انعكاساً منتظماً، بينما الأسطح الخشنة (كالورق) تُنتج انعكاساً غير منتظم', en: 'Smooth surfaces (like mirrors) produce specular reflection, while rough surfaces (like paper) produce diffuse reflection' }
+                },
+                {
+                    q: { ar: 'أي من الأسطح التالية يُنتج انعكاساً منتظماً (Specular Reflection)؟', en: 'Which of the following surfaces produces Specular Reflection?' },
+                    options: [
+                        { ar: 'ورقة بيضاء', en: 'White paper' },
+                        { ar: 'مرآة مستوية', en: 'Plane mirror' },
+                        { ar: 'جدار خرساني', en: 'Concrete wall' },
+                        { ar: 'قطعة قماش', en: 'Piece of cloth' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'المرآة المستوية سطح أملس جداً يُنتج انعكاساً منتظماً حيث تنعكس الأشعة بشكل متوازٍ', en: 'A plane mirror is a very smooth surface that produces specular reflection where rays reflect parallelly' }
+                },
+                {
+                    q: { ar: 'لماذا نتمكن من قراءة صفحة الكتاب من زوايا مختلفة؟', en: 'Why can we read a book page from different angles?' },
+                    options: [
+                        { ar: 'لأن الضوء يخضع للانعكاس المنتظم', en: 'Because light undergoes specular reflection' },
+                        { ar: 'لأن الضوء يخضع للانعكاس غير المنتظم (Diffuse) ويتشتت في جميع الاتجاهات', en: 'Because light undergoes diffuse reflection and scatters in all directions' },
+                        { ar: 'لأن الصفحة تمتص كل الضوء الساقط عليها', en: 'Because the page absorbs all incident light' },
+                        { ar: 'لأن الصفحة تصدر ضوءاً خاصاً بها', en: 'Because the page emits its own light' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'الورق سطح خشن على المستوى المجهري، فينعكس الضوء بشكل غير منتظم مما يسمح برؤيته من أي زاوية', en: 'Paper is rough at the microscopic level, so light reflects diffusely, allowing it to be seen from any angle' }
+                },
+                {
+                    q: { ar: 'ما هو الشرط الأساسي لسطح عاكس لكي يُنتج انعكاساً منتظماً (Specular)؟', en: 'What is the key condition for a reflecting surface to produce Specular reflection?' },
+                    options: [
+                        { ar: 'أن يكون السطح خشناً جداً', en: 'The surface must be very rough' },
+                        { ar: 'ألا يكون السطح خشناً على مقياس الطول الموجي للضوء', en: 'The surface must not be rough on the scale of the wavelength of light' },
+                        { ar: 'أن يكون السطح ملوناً', en: 'The surface must be colored' },
+                        { ar: 'أن يكون السطح شفافاً تماماً', en: 'The surface must be completely transparent' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'يحدث الانعكاس المنتظم فقط إذا لم يكن السطح خشناً على مقياس الطول الموجي للضوء', en: 'Specular reflection occurs only if the reflecting surface is not rough on the scale of the wavelength of light' }
+                }
+            ]
+        },
+        {
+            id: 'sec2',
+            title: { ar: '🔹 الجزء الثاني: قانون الانعكاس ونموذج الموجة', en: '🔹 Part 2: Law of Reflection & Wave Model' },
+            questions: [
+                {
+                    q: { ar: 'ماذا ينص قانون الانعكاس (Law of Reflection)؟', en: 'What does the Law of Reflection state?' },
+                    options: [
+                        { ar: 'زاوية الانعكاس تساوي زاوية السقوط مقاستين من الخط الناظم', en: 'The angle of reflection equals the angle of incidence, both measured from the normal' },
+                        { ar: 'زاوية الانعكاس أكبر دائماً من زاوية السقوط', en: 'The angle of reflection is always greater than the angle of incidence' },
+                        { ar: 'زاوية الانعكاس تساوي صفراً دائماً', en: 'The angle of reflection is always zero' },
+                        { ar: 'زاوية الانعكاس تعتمد على لون الضوء الساقط', en: 'The angle of reflection depends on the color of incident light' }
+                    ],
+                    correct: 0,
+                    answer: { ar: 'قانون الانعكاس: الزاوية التي يصنعها الشعاع المنعكس مقاسة من الناظم تساوي الزاوية التي يصنعها الشعاع الساقط مقاسة من نفس الناظم', en: 'Law of Reflection: The angle that a reflected ray makes as measured from the normal equals the angle that the incident ray makes as measured from the same normal' }
+                },
+                {
+                    q: { ar: 'ما هو "الخط الناظم" (Normal) في الانعكاس؟', en: 'What is the "Normal" in reflection?' },
+                    options: [
+                        { ar: 'خط وهمي عمودي على السطح عند نقطة سقوط الشعاع', en: 'An imaginary line perpendicular to the surface at the location where light strikes' },
+                        { ar: 'خط موازي للسطح العاكس', en: 'A line parallel to the reflecting surface' },
+                        { ar: 'الشعاع الضوئي الساقط نفسه', en: 'The incident light ray itself' },
+                        { ar: 'الشعاع الضوئي المنعكس', en: 'The reflected light ray' }
+                    ],
+                    correct: 0,
+                    answer: { ar: 'الخط الناظم هو خط وهمي عمودي على السطح عند النقطة التي يسقط عليها الضوء', en: 'The normal is an imaginary line that is perpendicular to a surface at the location where light strikes the surface' }
+                },
+                {
+                    q: { ar: 'وفقاً لنموذج الموجة، لماذا تنعكس جميع ألوان الضوء بنفس الزاوية عن سطح أملس؟', en: 'According to the wave model, why do all colors of light reflect at the same angle from a smooth surface?' },
+                    options: [
+                        { ar: 'لأن الطول الموجي لا يؤثر على عملية الانعكاس، وجميع النقاط على جبهة الموجة تسير بنفس السرعة', en: 'Because wavelength does not affect the reflection process, and all points on the wavefront travel at the same speed' },
+                        { ar: 'لأن الألوان المختلفة تمتص بسرعات مختلفة', en: 'Because different colors are absorbed at different speeds' },
+                        { ar: 'لأن السطح الأملس يكسر الألوان بشكل متفاوت', en: 'Because the smooth surface refracts colors differently' },
+                        { ar: 'لأن الضوء الأبيض يتحول إلى ألوان عند الانعكاس', en: 'Because white light turns into colors upon reflection' }
+                    ],
+                    correct: 0,
+                    answer: { ar: 'جميع النقاط على جبهة الموجة تسير بنفس السرعة وتقطع نفس المسافة في نفس الزمن، لذا تغادر السطح بنفس زاوية السقوط', en: 'All points along the wavefront travel at the same speed and cover the same distance in the same time, so the wavefront leaves the surface at an angle equal to its incident angle' }
+                },
+                {
+                    q: { ar: 'إذا سقط شعاع ضوئي على سطح عاكس بزاوية 40° مع السطح نفسه، فما هي زاوية الانعكاس؟', en: 'If a light ray strikes a reflecting surface at an angle of 40° with the surface itself, what is the angle of reflection?' },
+                    options: [
+                        { ar: '<span class="formula">40°</span>', en: '<span class="formula">40°</span>' },
+                        { ar: '<span class="formula">50°</span>', en: '<span class="formula">50°</span>' },
+                        { ar: '<span class="formula">90°</span>', en: '<span class="formula">90°</span>' },
+                        { ar: '<span class="formula">80°</span>', en: '<span class="formula">80°</span>' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'زاوية السقوط تقاس مع الناظم (العمودي)، إذن زاوية السقوط = 90° - 40° = 50°، وبما أن زاوية الانعكاس = زاوية السقوط، فالإجابة 50°', en: 'The angle of incidence is measured from the normal, so angle of incidence = 90° - 40° = 50°. Since angle of reflection = angle of incidence, the answer is 50°' }
+                }
+            ]
+        },
+        {
+            id: 'sec3',
+            title: { ar: '🔹 الجزء الثالث: خصائص الصور - الموقع والارتفاع', en: '🔹 Part 3: Image Properties - Position & Height' },
+            questions: [
+                {
+                    q: { ar: 'ما هي العلاقة بين موقع الصورة (xi) وموقع الجسم (xo) في المرآة المستوية؟', en: 'What is the relationship between image position (xi) and object position (xo) in a plane mirror?' },
+                    options: [
+                        { ar: '<span class="formula">xi = xo</span>', en: '<span class="formula">xi = xo</span>' },
+                        { ar: '<span class="formula">xi = -xo</span>', en: '<span class="formula">xi = -xo</span>' },
+                        { ar: '<span class="formula">xi = 2xo</span>', en: '<span class="formula">xi = 2xo</span>' },
+                        { ar: '<span class="formula">xi = xo / 2</span>', en: '<span class="formula">xi = xo / 2</span>' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'في المرآة المستوية، موقع الصورة يساوي سالب موقع الجسم (xi = -xo)', en: 'With a plane mirror, the image position is equal to the negative of the object position (xi = -xo)' }
+                },
+                {
+                    q: { ar: 'ماذا تشير الإشارة السالبة في معادلة موقع الصورة (xi = -xo)؟', en: 'What does the negative sign in the image position equation (xi = -xo) indicate?' },
+                    options: [
+                        { ar: 'أن الصورة حقيقية وتتكون أمام المرآة', en: 'The image is real and forms in front of the mirror' },
+                        { ar: 'أن الصورة وهمية وتتكون خلف المرآة', en: 'The image is virtual and forms behind the mirror' },
+                        { ar: 'أن الصورة مصغرة', en: 'The image is diminished' },
+                        { ar: 'أن الصورة مقلوبة رأساً على عقب', en: 'The image is upside down' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'الإشارة السالبة تشير إلى أن الصورة خلف المرآة، وبالتالي هي صورة وهمية (Virtual)', en: 'The negative sign indicates that the image is behind the mirror (and therefore virtual)' }
+                },
+                {
+                    q: { ar: 'ما هي خاصية ارتفاع الصورة (hi) مقارنة بارتفاع الجسم (ho) في المرآة المستوية؟', en: 'What is the property of image height (hi) compared to object height (ho) in a plane mirror?' },
+                    options: [
+                        { ar: '<span class="formula">hi = 2ho</span> (مكبرة للضعف)', en: '<span class="formula">hi = 2ho</span> (Magnified twice)' },
+                        { ar: '<span class="formula">hi = ho / 2</span> (مصغرة للنصف)', en: '<span class="formula">hi = ho / 2</span> (Diminished to half)' },
+                        { ar: '<span class="formula">hi = ho</span> (نفس الارتفاع تماماً)', en: '<span class="formula">hi = ho</span> (Same height exactly)' },
+                        { ar: '<span class="formula">hi = -ho</span> (مقلوبة)', en: '<span class="formula">hi = -ho</span> (Inverted)' }
+                    ],
+                    correct: 2,
+                    answer: { ar: 'في المرآة المستوية، ارتفاع الصورة يساوي ارتفاع الجسم تماماً (hi = ho)', en: 'With a plane mirror, image height is equal to object height (hi = ho)' }
+                },
+                {
+                    q: { ar: 'ما هو نوع الصورة التي تتكون دائماً في المرآة المستوية؟', en: 'What type of image is always formed in a plane mirror?' },
+                    options: [
+                        { ar: 'صورة حقيقية (Real Image)', en: 'Real Image' },
+                        { ar: 'صورة وهمية (Virtual Image)', en: 'Virtual Image' },
+                        { ar: 'صورة مكبرة جداً', en: 'Highly magnified image' },
+                        { ar: 'صورة مصغرة جداً', en: 'Highly diminished image' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'المرايا المستوية تُنتج دائماً صوراً وهمية (Virtual Images) لأن الأشعة لا تتجمع فعلياً عند موقع الصورة', en: 'Plane mirrors produce only virtual images because there are no light rays at the image location' }
+                }
+            ]
+        },
+        {
+            id: 'sec4',
+            title: { ar: '🔹 الجزء الرابع: خصائص الصور - الاتجاه والانعكاس', en: '🔹 Part 4: Image Properties - Orientation & Reversal' },
+            questions: [
+                {
+                    q: { ar: 'كيف يكون اتجاه الصورة في المرآة المستوية مقارنة بالجسم؟', en: 'How is the orientation of the image in a plane mirror compared to the object?' },
+                    options: [
+                        { ar: 'مقلوبة رأساً على عقب (Upside down)', en: 'Upside down' },
+                        { ar: 'معتدلة (Upright) بنفس اتجاه الجسم', en: 'Upright with the same orientation as the object' },
+                        { ar: 'مائلة بزاوية 45°', en: 'Tilted at 45°' },
+                        { ar: 'مقلوبة يميناً ويساراً فقط', en: 'Reversed left-to-right only' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'المرآة المستوية تُنتج صورة بنفس اتجاه الجسم (معتدلة)، فإذا وقفت منتصباً ستبدو صورتك منتصبة', en: 'A plane mirror produces an image with the same orientation as the object. If you stand upright, a plane mirror produces an image of you standing upright' }
+                },
+                {
+                    q: { ar: 'ما هو نوع الانعكاس الحقيقي الذي تُحدثه المرآة المستوية للصورة؟', en: 'What is the actual type of reversal that a plane mirror produces for the image?' },
+                    options: [
+                        { ar: 'انعكاس يمين-يسار (Left-Right Reversal)', en: 'Left-Right Reversal' },
+                        { ar: 'انعكاس أمامي-خلفي (Front-to-Back Reversal)', en: 'Front-to-Back Reversal' },
+                        { ar: 'انعكاس علوي-سفلي (Top-Bottom Reversal)', en: 'Top-Bottom Reversal' },
+                        { ar: 'لا يحدث أي انعكاس', en: 'No reversal occurs' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'المرآة المستوية تُحدث انعكاساً أمامياً-خلفياً (Front-to-Back Reversal)، وليس يميناً-يساراً كما يُشاع', en: 'However, the mirror gives a front-to-back reversal. A plane mirror does not really reverse left and right' }
+                },
+                {
+                    q: { ar: 'لماذا يبدو أن اليد اليمنى للجسم هي اليد اليسرى للصورة في المرآة المستوية؟', en: 'Why does it appear that the right hand of the object is the left hand of the image in a plane mirror?' },
+                    options: [
+                        { ar: 'لأن المرآة تعكس اليمين واليسار فعلياً', en: 'Because the mirror actually reverses left and right' },
+                        { ar: 'لأن الصورة تواجهك في الاتجاه المعاكس، فاليد التي على جانبك الأيمن ستكون على جانبها الأيسر من منظورك', en: 'Because the image faces you in the opposite direction, so the hand on your right side will be on its left side from your perspective' },
+                        { ar: 'لأن الضوء ينكسر عند عبوره للمرآة', en: 'Because light refracts when passing through the mirror' },
+                        { ar: 'لأن الصورة مصغرة', en: 'Because the image is diminished' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'المرآة تعكس الصورة بحيث تواجهك في الاتجاه المعاكس (انعكاس أمامي-خلفي)، مما يجعل اليد اليمنى تظهر كيد يسرى من منظورك', en: 'The mirror reverses the boy\'s image such that it is facing in the opposite direction as the boy, or, in other words, it produces a front-to-back reversal' }
+                },
+                {
+                    q: { ar: 'إذا قمت بحركة الوقوف على الرأس (Headstand) أمام مرآة مستوية، كيف ستبدو صورتك؟', en: 'If you do a headstand in front of a plane mirror, how will your image look?' },
+                    options: [
+                        { ar: 'ستبدو واقفاً بشكل طبيعي', en: 'It will look like you are standing normally' },
+                        { ar: 'ستبدو وأنت تقوم بحركة الوقوف على الرأس أيضاً', en: 'It will show you doing a headstand too' },
+                        { ar: 'ستبدو مقلوبة رأساً على عقب فقط', en: 'It will look upside down only' },
+                        { ar: 'لن تظهر الصورة', en: 'The image will not appear' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'المرآة تحافظ على نفس اتجاه الجسم، فإذا قمت بحركة الوقوف على الرأس ستُظهر لك المرآة أنك تقوم بنفس الحركة', en: 'If you do a headstand, the mirror shows you doing a headstand' }
+                }
+            ]
+        },
+        {
+            id: 'sec5',
+            title: { ar: '🔹 الجزء الخامس: مسائل حسابية على الانعكاس', en: '🔹 Part 5: Calculation Problems on Reflection' },
+            questions: [
+                {
+                    q: { ar: 'يسقط شعاع ضوئي على مرآة مستوية بزاوية 52° مع الخط الناظم. ما هي زاوية الانعكاس؟', en: 'A light ray strikes a plane mirror at an angle of 52° to the normal. What is the angle of reflection?' },
+                    options: [
+                        { ar: '<span class="formula">38°</span>', en: '<span class="formula">38°</span>' },
+                        { ar: '<span class="formula">52°</span>', en: '<span class="formula">52°</span>' },
+                        { ar: '<span class="formula">104°</span>', en: '<span class="formula">104°</span>' },
+                        { ar: '<span class="formula">90°</span>', en: '<span class="formula">90°</span>' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'حسب قانون الانعكاس، زاوية الانعكاس تساوي زاوية السقوط، إذن زاوية الانعكاس = 52°', en: 'According to the Law of Reflection, the angle of reflection equals the angle of incidence, so it is 52°' }
+                },
+                {
+                    q: { ar: 'في المثال المحسوب في الملف: سقط شعاع بزاوية 52° مع الناظم، ثم دُورت المرآة 35° لتقليل زاوية السقوط. ما هي الزاوية بين الشعاع المنعكس الابتدائي والنهائي؟', en: 'In the example from the file: A ray strikes at 52° to the normal, then the mirror rotates 35° to decrease the angle of incidence. What is the angle between the initial and final reflected ray?' },
+                    options: [
+                        { ar: '<span class="formula">35°</span>', en: '<span class="formula">35°</span>' },
+                        { ar: '<span class="formula">52°</span>', en: '<span class="formula">52°</span>' },
+                        { ar: '<span class="formula">70°</span>', en: '<span class="formula">70°</span>' },
+                        { ar: '<span class="formula">104°</span>', en: '<span class="formula">104°</span>' }
+                    ],
+                    correct: 2,
+                    answer: { ar: 'الشعاع المنعكس يدور بزاوية ضعف دوران المرآة، إذن الزاوية = 2 × 35° = 70°', en: 'The reflected ray rotates through an angle twice as large as that of the mirror rotation, so the angle = 2 × 35° = 70°' }
+                },
+                {
+                    q: { ar: 'إذا سقط شعاع ليزر على مرآة مستوية بزاوية 38° مع الناظم، وزاد مقدار زاوية السقوط بمقدار 13°، فما هي زاوية الانعكاس الجديدة؟', en: 'If a laser ray strikes a plane mirror at an angle of 38° to the normal, and the angle of incidence increases by 13°, what is the new angle of reflection?' },
+                    options: [
+                        { ar: '<span class="formula">38°</span>', en: '<span class="formula">38°</span>' },
+                        { ar: '<span class="formula">51°</span>', en: '<span class="formula">51°</span>' },
+                        { ar: '<span class="formula">25°</span>', en: '<span class="formula">25°</span>' },
+                        { ar: '<span class="formula">76°</span>', en: '<span class="formula">76°</span>' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'زاوية السقوط الجديدة = 38° + 13° = 51°، وبما أن زاوية الانعكاس = زاوية السقوط، فالإجابة 51°', en: 'The new angle of incidence = 38° + 13° = 51°. Since angle of reflection = angle of incidence, the answer is 51°' }
+                },
+                {
+                    q: { ar: 'وضعت مرآتان مستويتان بزاوية قائمة (90°) بينهما. سقط شعاع على إحداهما بزاوية 60° مع الناظم وانعكس نحو المرآة الثانية. ما هي زاوية الانعكاس عن المرآة الثانية؟', en: 'You position two plane mirrors at right angles to each other. A light ray strikes one mirror at an angle of 60° to the normal and reflects toward the second mirror. What is its angle of reflection off the second mirror?' },
+                    options: [
+                        { ar: '<span class="formula">60°</span>', en: '<span class="formula">60°</span>' },
+                        { ar: '<span class="formula">30°</span>', en: '<span class="formula">30°</span>' },
+                        { ar: '<span class="formula">90°</span>', en: '<span class="formula">90°</span>' },
+                        { ar: '<span class="formula">45°</span>', en: '<span class="formula">45°</span>' }
+                    ],
+                    correct: 1,
+                    answer: { ar: 'الشعاع ينعكس عن الأولى بزاوية 60°، الزاوية بين الشعاعين 120°، الزاوية المتبقية مع سطح المرآة الثانية = 180° - 120° = 60°، إذن زاوية السقوط على الناظم = 90° - 60° = 30°', en: 'The ray reflects off the first mirror at 60°. The angle between the incident and reflected ray is 120°. The remaining angle with the second mirror surface = 180° - 120° = 60°. So the angle of incidence to the normal of the second mirror = 90° - 60° = 30°' }
+                }
+            ]
+        }
+    ]
+};
+
+function shuffleArray(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+let examData;
+let correctAnswersMap = {};
+let currentLang = 'ar';
+let timeRemaining = 3600;
+let timerInterval;
+
+function prepareShuffledExam() {
+    examData = JSON.parse(JSON.stringify(originalExamData));
+    correctAnswersMap = {};
+    let globalIdx = 0;
+    
+    examData.sections.forEach((section) => {
+        section.questions = shuffleArray(section.questions);
+        
+        section.questions.forEach((q) => {
+            const optionsWithCorrect = q.options.map((opt, idx) => ({
+                option: opt,
+                isCorrect: idx === q.correct
+            }));
+            
+            const shuffledOptions = shuffleArray(optionsWithCorrect);
+            q.options = shuffledOptions.map(o => o.option);
+            
+            const newCorrectIndex = shuffledOptions.findIndex(o => o.isCorrect);
+            q.correct = newCorrectIndex;
+            
+            correctAnswersMap[globalIdx] = String.fromCharCode(97 + newCorrectIndex);
+            globalIdx++;
+        });
+    });
+    
+    console.log('✅ تم خلط الأسئلة والخيارات بنجاح');
+}
+
+function reshuffleExam() {
+    prepareShuffledExam();
+    renderExam();
+    document.querySelectorAll('input[type="radio"]:checked').forEach(r => r.checked = false);
+    document.getElementById('results-panel').classList.add('hidden');
+    document.querySelectorAll('.correct, .incorrect').forEach(el => {
+        el.classList.remove('correct', 'incorrect');
+    });
+    alert(currentLang === 'ar' 
+        ? '🔀 تم إعادة خلط الأسئلة والخيارات بنجاح!' 
+        : '🔀 Questions and options have been reshuffled successfully!');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function setLanguage(lang) {
+    currentLang = lang;
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    
+    document.getElementById('btn-ar').classList.toggle('active', lang === 'ar');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    
+    document.body.classList.toggle('en-mode', lang === 'en');
+    
+    document.querySelectorAll('[data-ar][data-en]').forEach(el => {
+        el.textContent = el.getAttribute(`data-${lang}`);
+    });
+    
+    renderExam();
+}
+
+function renderExam() {
+    const container = document.getElementById('exam-content');
+    const labels = {
+        ar: { option: ['أ', 'ب', 'ج', 'د'], answer: '✅ الإجابة:' },
+        en: { option: ['A', 'B', 'C', 'D'], answer: '✅ Answer:' }
+    };
+    const lbl = labels[currentLang];
+    const isRTL = currentLang === 'ar';
+    
+    let html = '';
+    let globalIdx = 0;
+    
+    examData.sections.forEach((section) => {
+        html += `
+        <section class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-bold mb-4 text-teal-700">${section.title[currentLang]}</h2>
+            <ol class="space-y-4 text-sm">`;
+            
+        section.questions.forEach((q) => {
+            const borderSide = isRTL ? 'border-r-4 pr-4' : 'border-l-4 pl-4';
+            html += `
+                <li class="${borderSide} border-teal-500 py-2" id="q-${globalIdx}">
+                    <strong>${globalIdx + 1}.</strong> ${q.q[currentLang]}<br>`;
+                    
+            q.options.forEach((opt, oIdx) => {
+                const radioSide = isRTL ? 'mr-4 ml-2' : 'ml-4 mr-2';
+                html += `
+                    <label class="cursor-pointer block mt-1 ${isRTL ? 'mr-4' : 'ml-4'}">
+                        <input type="radio" name="q${globalIdx}" value="${String.fromCharCode(97 + oIdx)}" class="${radioSide}"> 
+                        ${lbl.option[oIdx]}) ${opt[currentLang]}
+                    </label>`;
+            });
+            
+            html += `
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">
+                        ${lbl.answer} ${lbl.option[q.correct]}) ${q.options[q.correct][currentLang]} — ${q.answer[currentLang]}
+                    </div>
+                </li>`;
+            globalIdx++;
+        });
+        
+        html += `
+            </ol>
+        </section>`;
+    });
+    
+    container.innerHTML = html;
+}
+
+function startTimer() {
+    document.getElementById('timer-container').style.display = 'block';
+    timerInterval = setInterval(() => {
+        timeRemaining--;
+        const minutes = Math.floor(timeRemaining / 60);
+        const seconds = timeRemaining % 60;
+        const timerEl = document.getElementById('timer');
+        timerEl.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+        if (timeRemaining <= 300) timerEl.classList.add('timer-warning');
+        if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            alert(currentLang === 'ar' ? "انتهى الوقت! سيتم تسليم الامتحان تلقائياً." : "Time's up! Exam will be submitted automatically.");
+            gradeExam();
+        }
+    }, 1000);
+}
+
+function toggleAnswers() {
+    document.querySelectorAll('.answer-box').forEach(el => el.classList.toggle('hidden'));
+}
+
+function gradeExam() {
+    let correctCount = 0;
+    let sec1 = 0, sec2 = 0, sec3 = 0, sec4 = 0, sec5 = 0;
+    
+    for (let i = 0; i < 20; i++) {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        const li = document.getElementById(`q-${i}`);
+        const correctAnswer = correctAnswersMap[i];
+        
+        if (li) {
+            const isCorrect = selected && selected.value === correctAnswer;
+            
+            if (isCorrect) {
+                correctCount++;
+                li.classList.add('correct');
+                li.classList.remove('incorrect');
+                
+                if (i < 4) sec1++;
+                else if (i < 8) sec2++;
+                else if (i < 12) sec3++;
+                else if (i < 16) sec4++;
+                else sec5++;
+            } else {
+                li.classList.add('incorrect');
+                li.classList.remove('correct');
+            }
+        }
+    }
+
+    const score = (correctCount / 20) * 100;
+    const successRate = Math.round(score);
+    
+    document.getElementById('res-total').textContent = `${Math.round(score)} / 100`;
+    document.getElementById('res-name').textContent = document.getElementById('studentName').value || (currentLang === 'ar' ? 'طالب' : 'Student');
+    document.getElementById('res-date').textContent = new Date().toLocaleDateString(currentLang === 'ar' ? 'ar-AE' : 'en-US');
+    
+    document.getElementById('sec1-score').textContent = `${sec1}/4`;
+    document.getElementById('sec2-score').textContent = `${sec2}/4`;
+    document.getElementById('sec3-score').textContent = `${sec3}/4`;
+    document.getElementById('sec4-score').textContent = `${sec4}/4`;
+    document.getElementById('sec5-score').textContent = `${sec5}/4`;
+    
+    const badge = document.getElementById('success-badge');
+    const percent = document.getElementById('success-percent');
+    percent.textContent = `${successRate}%`;
+    
+    if (currentLang === 'ar') {
+        if (successRate >= 90) { badge.textContent = 'ممتاز'; badge.className = 'success-badge grade-excellent'; }
+        else if (successRate >= 75) { badge.textContent = 'جيد جداً'; badge.className = 'success-badge grade-good'; }
+        else if (successRate >= 50) { badge.textContent = 'جيد'; badge.className = 'success-badge grade-pass'; }
+        else { badge.textContent = 'يحتاج تحسين'; badge.className = 'success-badge grade-fail'; }
+    } else {
+        if (successRate >= 90) { badge.textContent = 'Excellent'; badge.className = 'success-badge grade-excellent'; }
+        else if (successRate >= 75) { badge.textContent = 'Very Good'; badge.className = 'success-badge grade-good'; }
+        else if (successRate >= 50) { badge.textContent = 'Good'; badge.className = 'success-badge grade-pass'; }
+        else { badge.textContent = 'Needs Improvement'; badge.className = 'success-badge grade-fail'; }
+    }
+    
+    document.getElementById('results-panel').classList.remove('hidden');
+    document.getElementById('results-panel').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('sendEmailBtn').classList.remove('hidden');
+}
+
+function sendResultsToEmail() {
+    const btn = document.getElementById('sendEmailBtn');
+    const status = document.getElementById('emailStatus');
+    btn.disabled = true;
+    btn.textContent = currentLang === 'ar' ? '⏳ جاري الإرسال...' : '📤 Sending...';
+
+    const name = document.getElementById('studentName').value || 'N/A';
+    const studentClass = document.getElementById('studentClass').value || 'N/A';
+    const date = document.querySelector('input[type="text"]').value || new Date().toLocaleDateString();
+    const score = document.getElementById('res-total').textContent;
+    const successRate = document.getElementById('success-percent').textContent;
+    const badge = document.getElementById('success-badge').textContent;
+
+    const sectionNames = {
+        ar: ['الانعكاس المنتظم وغير المنتظم', 'قانون الانعكاس ونموذج الموجة', 'خصائص الصور - الموقع والارتفاع', 'خصائص الصور - الاتجاه والانعكاس', 'مسائل حسابية على الانعكاس'],
+        en: ['Specular vs Diffuse Reflection', 'Law of Reflection & Wave Model', 'Image Properties - Position & Height', 'Image Properties - Orientation & Reversal', 'Calculation Problems on Reflection']
+    };
+    const currentSectionNames = sectionNames[currentLang];
+
+    let answersHTML = `
+        <div style="font-family: 'Segoe UI', Tahoma, Arial, sans-serif; direction: ${currentLang === 'ar' ? 'rtl' : 'ltr'};">
+            <div style="background: linear-gradient(135deg, #0d9488, #0891b2); color: white; padding: 20px; border-radius: 10px 10px 0 0; text-align: center;">
+                <h2 style="margin: 0; font-size: 22px;">🔬 ${currentLang === 'ar' ? 'نتيجة امتحان انعكاس الضوء' : 'Reflection of Light Exam Result'}</h2>
+                <p style="margin: 5px 0 0 0; opacity: 0.9;">${currentLang === 'ar' ? 'فيزياء الصف الثاني عشر متقدم | الدرس 2.1' : 'Grade 12 Advanced Physics | Lesson 2.1'}</p>
+                <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.8;">🔀 ${currentLang === 'ar' ? 'تم خلط الأسئلة تلقائياً' : 'Questions were randomly shuffled'}</p>
+            </div>
+            
+            <div style="background: #f0fdfa; padding: 15px; border: 1px solid #99f6e4;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 8px; font-weight: bold; color: #0f766e;">${currentLang === 'ar' ? '👤 الاسم:' : '👤 Name:'}</td>
+                        <td style="padding: 8px;">${name}</td>
+                        <td style="padding: 8px; font-weight: bold; color: #0f766e;">${currentLang === 'ar' ? '🏫 الشعبة:' : '🏫 Class:'}</td>
+                        <td style="padding: 8px;">${studentClass}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; font-weight: bold; color: #0f766e;">${currentLang === 'ar' ? '📅 التاريخ:' : '📅 Date:'}</td>
+                        <td style="padding: 8px;">${date}</td>
+                        <td style="padding: 8px; font-weight: bold; color: #0f766e;">${currentLang === 'ar' ? '🏆 التقدير:' : '🏆 Grade:'}</td>
+                        <td style="padding: 8px;">${badge}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div style="background: white; padding: 20px; text-align: center; border-bottom: 2px solid #e5e7eb;">
+                <div style="display: inline-block; margin: 0 15px;">
+                    <div style="font-size: 32px; font-weight: bold; color: #0d9488;">${score}</div>
+                    <div style="color: #6b7280; font-size: 13px;">${currentLang === 'ar' ? 'الدرجة الكلية' : 'Total Score'}</div>
+                </div>
+                <div style="display: inline-block; margin: 0 15px;">
+                    <div style="font-size: 32px; font-weight: bold; color: #059669;">${successRate}%</div>
+                    <div style="color: #6b7280; font-size: 13px;">${currentLang === 'ar' ? 'نسبة النجاح' : 'Success Rate'}</div>
+                </div>
+            </div>
+
+            <h3 style="background: #f3f4f6; padding: 12px; margin: 0; color: #1f2937; border-bottom: 2px solid #d1d5db;">
+                📝 ${currentLang === 'ar' ? 'تفاصيل الإجابات' : 'Answer Details'}
+            </h3>
+            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                <thead>
+                    <tr style="background: #0d9488; color: white;">
+                        <th style="padding: 10px; border: 1px solid #0b7d73; width: 8%;">#</th>
+                        <th style="padding: 10px; border: 1px solid #0b7d73; width: 32%;">${currentLang === 'ar' ? 'القسم' : 'Section'}</th>
+                        <th style="padding: 10px; border: 1px solid #0b7d73; width: 15%;">${currentLang === 'ar' ? 'الإجابة' : 'Answer'}</th>
+                        <th style="padding: 10px; border: 1px solid #0b7d73; width: 15%;">${currentLang === 'ar' ? 'الصحيحة' : 'Correct'}</th>
+                        <th style="padding: 10px; border: 1px solid #0b7d73; width: 15%;">${currentLang === 'ar' ? 'النتيجة' : 'Status'}</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    let sectionScores = [0, 0, 0, 0, 0];
+    let sectionTotals = [4, 4, 4, 4, 4];
+
+    for (let i = 0; i < 20; i++) {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        const selectedValue = selected ? selected.value : '-';
+        const correctValue = correctAnswersMap[i];
+        const isCorrect = selectedValue === correctValue;
+        
+        const sectionIndex = Math.floor(i / 4);
+        if (isCorrect) sectionScores[sectionIndex]++;
+
+        const rowBg = i % 2 === 0 ? '#f9fafb' : '#ffffff';
+        const statusBg = isCorrect ? '#dcfce7' : '#fee2e2';
+        const statusColor = isCorrect ? '#166534' : '#991b1b';
+        const statusIcon = isCorrect ? '✅' : '❌';
+        const statusText = isCorrect 
+            ? (currentLang === 'ar' ? 'صحيح' : 'Correct') 
+            : (currentLang === 'ar' ? 'خطأ' : 'Wrong');
+
+        answersHTML += `
+            <tr style="background: ${rowBg};">
+                <td style="padding: 8px; border: 1px solid #e5e7eb; text-align: center; font-weight: bold;">${i + 1}</td>
+                <td style="padding: 8px; border: 1px solid #e5e7eb;">${currentSectionNames[sectionIndex]}</td>
+                <td style="padding: 8px; border: 1px solid #e5e7eb; text-align: center; font-weight: bold;">${selectedValue.toUpperCase()}</td>
+                <td style="padding: 8px; border: 1px solid #e5e7eb; text-align: center; font-weight: bold; color: #059669;">${correctValue.toUpperCase()}</td>
+                <td style="padding: 8px; border: 1px solid #e5e7eb; text-align: center; background: ${statusBg}; color: ${statusColor}; font-weight: bold;">
+                    ${statusIcon} ${statusText}
+                </td>
+            </tr>
+        `;
+    }
+
+    answersHTML += `
+                </tbody>
+            </table>
+
+            <h3 style="background: #f3f4f6; padding: 12px; margin: 0; color: #1f2937; border-bottom: 2px solid #d1d5db; border-top: 3px solid #0d9488;">
+                📊 ${currentLang === 'ar' ? 'تفصيل الأداء' : 'Performance Breakdown'}
+            </h3>
+            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                <thead>
+                    <tr style="background: #7c3aed; color: white;">
+                        <th style="padding: 10px; border: 1px solid #6d28d9;">${currentLang === 'ar' ? 'القسم' : 'Section'}</th>
+                        <th style="padding: 10px; border: 1px solid #6d28d9; width: 20%;">${currentLang === 'ar' ? 'النتيجة' : 'Score'}</th>
+                        <th style="padding: 10px; border: 1px solid #6d28d9; width: 20%;">${currentLang === 'ar' ? 'النسبة' : 'Percentage'}</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    for (let i = 0; i < 5; i++) {
+        const percentage = Math.round((sectionScores[i] / sectionTotals[i]) * 100);
+        const barColor = percentage >= 75 ? '#10b981' : percentage >= 50 ? '#f59e0b' : '#ef4444';
+        const rowBg = i % 2 === 0 ? '#f9fafb' : '#ffffff';
+        
+        answersHTML += `
+            <tr style="background: ${rowBg};">
+                <td style="padding: 10px; border: 1px solid #e5e7eb; font-weight: 600;">${currentSectionNames[i]}</td>
+                <td style="padding: 10px; border: 1px solid #e5e7eb; text-align: center; font-weight: bold; color: #0d9488;">
+                    ${sectionScores[i]} / ${sectionTotals[i]}
+                </td>
+                <td style="padding: 10px; border: 1px solid #e5e7eb;">
+                    <div style="background: #e5e7eb; border-radius: 10px; overflow: hidden; height: 20px; position: relative;">
+                        <div style="background: ${barColor}; width: ${percentage}%; height: 100%;"></div>
+                        <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 11px; font-weight: bold; color: #1f2937;">
+                            ${percentage}%
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+
+    answersHTML += `
+                </tbody>
+            </table>
+
+            <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); padding: 15px; border-radius: 0 0 10px 10px; border-top: 2px solid #f59e0b;">
+                <p style="margin: 0; color: #78350f; text-align: center; font-size: 13px;">
+                    💡 <strong>${currentLang === 'ar' ? 'ملاحظة:' : 'Note:'}</strong> 
+                    ${currentLang === 'ar' 
+                        ? 'تم إرسال هذا التقرير تلقائياً من منصة 4U التعليمية | Mr. Mohammed Hesham' 
+                        : 'This report was automatically sent from 4U Educational Platform | Mr. Mohammed Hesham'}
+                </p>
+            </div>
+        </div>
+    `;
+
+    const templateParams = {
+        to_email: TARGET_EMAIL,
+        student_name: name,
+        student_class: studentClass,
+        exam_date: date,
+        total_score: score,
+        success_rate: successRate,
+        grade: badge,
+        answers_table: answersHTML
+    };
+
+    emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams)
+        .then(() => {
+            status.textContent = currentLang === 'ar' 
+                ? '✅ تم إرسال النتائج بنجاح!' 
+                : '✅ Results sent successfully!';
+            status.style.color = '#059669';
+            btn.textContent = currentLang === 'ar' ? '✓ تم الإرسال' : '✓ Sent';
+        })
+        .catch(err => {
+            status.textContent = currentLang === 'ar' 
+                ? '❌ فشل الإرسال، حاول مرة أخرى' 
+                : '❌ Failed to send, try again';
+            status.style.color = '#dc2626';
+            btn.disabled = false;
+            btn.textContent = currentLang === 'ar' ? '📧 إعادة المحاولة' : '📧 Retry Send';
+            console.error('EmailJS Error:', err);
+        });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    prepareShuffledExam();
+    renderExam();
+    startTimer();
+    console.log('🔀 تم خلط الأسئلة والخيارات عشوائياً!');
+});
+</script>
+</body>
+</html>
